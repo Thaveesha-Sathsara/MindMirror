@@ -1,0 +1,38 @@
+@use "../colors";
+@import "../page-body";
+
+a {
+    text-decoration: none;
+}
+
+.home {
+    @include page-body();
+
+    &-journal{
+
+        &-container{
+        grid-area: body;
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        gap: 50px;
+        min-height: 1000px;
+     }
+
+     &-list {
+        display: grid;
+        justify-content: center;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 350px));;
+        grid-template-rows: repeat(auto-fit, minmax(250px, 350px));;
+        gap: 20px;
+    }
+    }
+    
+    
+    &_header{
+        font-size: 36px;
+        color: colors.$font-color;
+        align-self: center;
+    }
+}
