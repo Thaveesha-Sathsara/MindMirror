@@ -24,7 +24,7 @@ const JournalEntrySquare = ({ list }) => {
       <div className="journal-entries-grid">
         {sortedList.map((journal) => (
           <a
-            href={`/view/${journal._id}`}
+            href={`https://mindmirror-server.onrender.com/view/${journal._id}`}
             key={journal._id}
             className="journal-entry-square"
           >
