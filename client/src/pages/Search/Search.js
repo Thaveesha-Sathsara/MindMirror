@@ -11,6 +11,9 @@ const Search = () => {
     const [isSearching, setIsSearching] = useState(false);
     const tags = useRef();
 
+    // Use the server URL from the environment variables
+    const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:3000';
+
     useEffect(() => {
         if (searchState && searchState[0] && searchState[0].tagsList) {
             setTagsList(searchState[0].tagsList);
@@ -20,13 +23,14 @@ const Search = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (tagsList.length === 0) {
-            alert('Please add at least one tag to search');
+            console.error('Please add at least one tag to search');
             return;
         }
 
         setIsSearching(true);
         try {
-            const response = await fetch('/api/journals/search', {
+            // Correct the fetch URL to use the absolute path
+            const response = await fetch(`${serverUrl}/api/journals/search`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
