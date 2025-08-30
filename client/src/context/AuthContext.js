@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
     console.log('🔐 Initiating Google OAuth login...');
     
     // Get the server URL from environment or use default
-    const serverUrl = process.env.REACT_APP_SERVER_URL || 'https://mindmirror-server.onrender.com';
+    const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:3000';
     
     // Redirect to Google OAuth on the server
     window.location.href = `${serverUrl}/auth/google`;
