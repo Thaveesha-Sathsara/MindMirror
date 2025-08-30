@@ -8,12 +8,13 @@ const Home = () => {
     const { store, setStore } = useStore();
     const { user } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
-
-const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:3000';
+    
+    // Use the server URL from the environment variables
+    const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:3000';
 
     const fetchData = async () => {
         try {
-            const res = await fetch('${serverUrl}/api/journals', {
+            const res = await fetch(`${serverUrl}/api/journals`, {
                 credentials: 'include'
             });
             if (!res.ok) {
