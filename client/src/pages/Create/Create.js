@@ -13,12 +13,16 @@ const Create = () => {
     const textArea = useRef();
     const tags = useRef();
 
+    // Use the server URL from the environment variables
+    const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:3000';
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
 
         try {
-            const response = await fetch('/api/journals/create', {
+            // Correct the fetch URL to use the absolute path
+            const response = await fetch(`${serverUrl}/api/journals/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -41,13 +45,17 @@ const Create = () => {
                 setIsStoreUpdated(true);
                 navigate('/'); // Redirect to home page after successful creation
             } else {
-                const errorData = await response.json();
-                console.error('Error creating journal:', errorData);
-                alert('Failed to create journal. Please try again.');
+                // Ensure we handle non-JSON error responses gracefully
+                try {
+                    const errorData = await response.json();
+                    console.error('Error creating journal:', errorData);
+                } catch (jsonError) {
+                    console.error(`Error creating journal. Server responded with status ${response.status} and non-JSON data.`);
+                    console.error(response);
+                }
             }
         } catch (error) {
             console.error('Error: ', error);
-            alert('An error occurred while creating the journal. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
