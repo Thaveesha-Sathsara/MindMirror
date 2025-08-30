@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
   // Check if user is authenticated on app load
   useEffect(() => {
     checkAuthStatus();
-  }, []);
+  }, [clientUrl, serverUrl]);
 
   const checkAuthStatus = async () => {
     try {
