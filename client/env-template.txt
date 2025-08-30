@@ -1,0 +1,5 @@
+# MindMirror Client Environment Variables
+# Copy this file to .env and fill in your actual values
+
+# Server URL for OAuth redirects
+REACT_APP_SERVER_URL=http://localhost:3000

@@ -1,9 +1,0 @@
-.journal-entry {
-  padding: 15px;
-  color: #C5C6C7;
-  background-color: #0B0C10;
-  display: grid;
-  grid-template-columns: minmax(100px, 300px);
-  grid-template-rows: 50px 24px 100px min-content;
-  gap: 15px .journal-entry _title;
-}
