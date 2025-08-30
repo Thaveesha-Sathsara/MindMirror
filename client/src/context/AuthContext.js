@@ -7,6 +7,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:3000';
+  
   // Check if user is authenticated on app load
   useEffect(() => {
     checkAuthStatus();
