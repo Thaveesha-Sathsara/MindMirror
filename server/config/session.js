@@ -9,7 +9,9 @@ export function sessionMiddleware({ mongoUrl, secret }) {
     store: MongoStore.create({ mongoUrl }),
     cookie: {
       httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      secure: true, // This is required for SameSite=None
+      sameSite: 'none', // This allows cross-origin cookie sharing
     },
   });
 }
