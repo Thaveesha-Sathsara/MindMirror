@@ -1,0 +1,44 @@
+Frontend tech stack
+React - component-based UI library
+
+URL naming:
+Keep URLs simple and avoid using underscore and camelCase
+Only use hyphen if needed
+Plural for collections (example: reports)
+Show hierarchy like below example
+
+// For view all
+/sections
+
+// For creating
+/sections/create
+
+// For viewing
+/sections/:id/view
+
+// For editing
+/sections/:id:editing
+
+kebab-case for folders and files
+PascalCase for react components
+camelCase for hook files
+custom hookd should use camelCase with 'use' prefix: useAuth.js, useSections.js
+
+src/
+|
+├── components
+|  ├── DataTable.jsx
+|  ├── FormInputField.js
+|
+├── pages
+|  ├── create-entry
+|     ├── create.js
+|     ├── create.css
+|
+├── hooks
+|  ├── useAuth.js
+|  ├── useTheme.js
+|
+├── utils
+|  ├── date-formatter.js
+

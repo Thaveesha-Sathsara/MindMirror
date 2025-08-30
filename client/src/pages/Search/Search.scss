@@ -1,0 +1,50 @@
+@use "../colors";
+@import "../page-body";
+@import "../buttons";
+@import "../text-field-background";
+
+.search {
+    @include page-body();
+
+    &_journal {
+        &-container{
+            grid-area: body;
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            gap: 50px;
+            min-height: 1000px;
+        }
+
+        &-list{
+            display: grid;
+            justify-content: center;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 350px));;
+            grid-template-rows: repeat(auto-fit, minmax(250px, 350px));;
+            gap: 20px;
+        }
+    }
+
+    &_form-container{
+        display: grid;
+        grid-template-columns: 300px;
+        grid-template-rows: auto;
+        justify-content: center;
+    }
+
+    &_input{
+        max-width: 300px;
+    }
+}
+
+.tags{
+    display: grid;
+    grid-template-rows: repeat(2, 1fr);
+    margin: 10px 0 20px 0;
+    color: colors.$font-color;
+
+    & input{
+        height: 30px;
+    }
+}

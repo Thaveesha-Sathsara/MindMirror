@@ -1,0 +1,47 @@
+@use "../colors";
+@import "../page-body";
+@import "../buttons";
+@import "../text-field-background";
+
+.create {
+    @include page-body();
+
+    &_fields {
+        grid-area: body;
+        display: grid;
+        grid-template-rows: .05fr .05fr .05fr .95fr;
+        margin-bottom: 30px;
+
+        @media screen and (max-width: 800px) {
+            margin: 10px 20px;
+        }
+
+        & .tags {
+            display: grid;
+            grid-template-rows: repeat(2, 1fr);
+            margin: 10px 0 20px 0;
+
+            & input {
+                height: 30px;
+            }
+        }
+
+        & label {
+            color: colors.$blue-font-bright;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        & .journalEntry {
+            height: 600px;
+            font-size: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+
+            &_label {
+                margin-bottom: 20px;    
+            }
+        }
+    }
+}

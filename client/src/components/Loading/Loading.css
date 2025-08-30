@@ -1,0 +1,37 @@
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #000000 0%, #272528 100%);
+}
+
+.loading-logo {
+  width: 70px; /* Adjust size as needed */
+  height: 70px;
+  animation: bounce 1s infinite;
+  margin-bottom: 20px;
+  border-radius: 15px;
+}
+
+.loading-container p {
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+/* Bounce animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px); /* height of the bounce */
+  }
+}
+
+/* Optional: remove spinner if using logo */
+/* .loading-spinner {
+  display: none;
+} */
