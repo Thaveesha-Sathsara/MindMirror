@@ -14,6 +14,7 @@ import journalRoutes from "./routes/journal.routes.js";
 
 const app = express();
 const __dirname = path.resolve();
+app.set('trust proxy', 1);
 
 // --- Database ---
 connectDB(process.env.MONGO_URI);
@@ -29,6 +30,10 @@ app.use(express.json());
 app.use(sessionMiddleware({
     mongoUrl: process.env.MONGO_URI,
     secret: process.env.SESSION_SECRET,
+  cookie: {
+    secure: true,
+    sameSite: 'none',
+  }
 }));
 configurePassport();
 app.use(passport.initialize());
