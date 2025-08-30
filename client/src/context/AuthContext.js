@@ -15,9 +15,8 @@ export const AuthProvider = ({ children }) => {
   const checkAuthStatus = async () => {
     try {
       setError(null);
-      const response = await fetch('/api/user/me', {
-        credentials: 'include'
-      });
+      const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:3000';
+      const response = await fetch(`${serverUrl}/api/user/me`, { credentials: 'include' });
       
       if (response.ok) {
         const data = await response.json();
@@ -55,10 +54,11 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       setError(null);
-      const response = await fetch('/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
+      const response = await fetch(`${serverUrl}/auth/logout`, {
+      method: 'POST',
+      credentials: 'include'
       });
+
 
       if (response.ok) {
         setUser(null);
