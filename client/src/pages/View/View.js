@@ -138,14 +138,14 @@ const View = () => {
         </div>
 
         {/* The section below contains the edit and delete buttons */}
-        <div className="view-actions">
-          <button onClick={handleEdit} className="view-action-button edit">
-            Edit Journal
-          </button>
-          <button onClick={handleDelete} className="view-action-button delete">
-            Delete Journal
-          </button>
-        </div>
+        // <div className="view-actions">
+        //   <button onClick={handleEdit} className="view-action-button edit">
+        //     Edit Journal
+        //   </button>
+        //   <button onClick={handleDelete} className="view-action-button delete">
+        //     Delete Journal
+        //   </button>
+        // </div>
       </div>
     </section>
   );
