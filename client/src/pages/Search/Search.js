@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import JournalEntrySquare from "../../Component/JournalEntrySquare/JournalEntrySquare";
-import { handleTagInput, getTagButtons } from "../../utilities/utils";
+import { getTagButtons } from "../../utilities/utils";
 import './Search.css';
 import { useStore } from "../../context/StoreContext";
 
 const Search = () => {
     const [tagsList, setTagsList] = useState([]);
+    const [tagInputValue, setTagInputValue] = useState(""); // New state for input value
     const { searchState, setSearchState } = useStore();
     const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
-    const tags = useRef();
 
     // Use the server URL from the environment variables
     const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:3000';
@@ -20,21 +20,33 @@ const Search = () => {
         }
     }, [searchState]);
 
+    // Use a useEffect to handle tag separation based on input changes
+    useEffect(() => {
+        if (tagInputValue.includes(' ') || tagInputValue.includes(',')) {
+            const newTag = tagInputValue.trim().replace(',', '');
+            if (newTag) {
+                setTagsList(prevState => [...prevState, newTag]);
+            }
+            setTagInputValue(""); // Clear the input field
+        }
+    }, [tagInputValue, setTagsList]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Add any remaining text in the tags input as a final tag before submitting
-        const lastTag = tags.current.value.trim();
+        setIsSearching(true);
+
+        let finalTags = [...tagsList];
+        const lastTag = tagInputValue.trim();
         if (lastTag) {
-            setTagsList(prev => [...prev, lastTag]);
+            finalTags = [...finalTags, lastTag];
         }
 
-        const finalTags = lastTag ? [...tagsList, lastTag] : tagsList;
         if (finalTags.length === 0) {
             console.error('Please add at least one tag to search');
+            setIsSearching(false);
             return;
         }
-
-        setIsSearching(true);
+        
         try {
             const response = await fetch(`${serverUrl}/api/journals/search`, {
                 method: 'POST',
@@ -79,11 +91,11 @@ const Search = () => {
                     <div className="search-form-container">
                         <div className="search-input-group">
                             <label htmlFor="tags">Search Tags</label>
-                            <input 
+                            <input
                                 id="tags"
-                                name="tags" 
-                                ref={tags} 
-                                onKeyUp={(e) => handleTagInput(e, tags, setTagsList)} // Changed onKeyDown to onKeyUp and fixed the function call
+                                name="tags"
+                                value={tagInputValue} // Control the input with state
+                                onChange={(e) => setTagInputValue(e.target.value)} // Update state on change
                                 placeholder="Add tags separated by spaces to search..."
                             />
                         </div>
@@ -92,9 +104,9 @@ const Search = () => {
                             {getTagButtons(tagsList, setTagsList)}
                         </div>
                         
-                        <button 
-                            className="search-button" 
-                            type="submit" 
+                        <button
+                            className="search-button"
+                            type="submit"
                             disabled={isSearching}
                         >
                             {isSearching ? 'Searching...' : 'Search Journals'}
