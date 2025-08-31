@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../../context/StoreContext";
-import { handleSpaceDown, getTagButtons } from "../../utilities/utils";
+import { handleTagInput, getTagButtons } from "../../utilities/utils"; // Import the new function
 import "./Create.css";
 
 const Create = () => {
@@ -20,6 +20,12 @@ const Create = () => {
         e.preventDefault();
         setIsSubmitting(true);
 
+        // Add any remaining text in the tags input as a final tag before submitting
+        const lastTag = tags.current.value.trim();
+        if (lastTag) {
+            setTagsList(prev => [...prev, lastTag]);
+        }
+
         try {
             // Correct the fetch URL to use the absolute path
             const response = await fetch(`${serverUrl}/api/journals/create`, {
@@ -31,7 +37,7 @@ const Create = () => {
                 credentials: 'include',
                 body: JSON.stringify({
                     journal: {
-                        tags: [...tagsList],
+                        tags: [...tagsList, lastTag].filter(Boolean), // Filter out any empty tags
                         title: title.current.value,
                         body: textArea.current.value,
                     }
@@ -96,7 +102,7 @@ const Create = () => {
                                     id="tags"
                                     name="tags" 
                                     ref={tags} 
-                                    onKeyDown={(e) => handleSpaceDown(e, tags, setTagsList)}
+                                    onKeyUp={(e) => handleTagInput(e, tags, setTagsList)} // Change onKeyDown to onKeyUp
                                     placeholder="Add tags separated by spaces (e.g., mood thoughts goals)"
                                 />
                             </div>
