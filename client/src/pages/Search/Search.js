@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import JournalEntrySquare from "../../Component/JournalEntrySquare/JournalEntrySquare";
-import { handleSpaceDown, getTagButtons } from "../../utilities/utils";
+import { handleTagInput, getTagButtons } from "../../utilities/utils";
 import './Search.css';
 import { useStore } from "../../context/StoreContext";
 
@@ -22,14 +22,20 @@ const Search = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (tagsList.length === 0) {
+        // Add any remaining text in the tags input as a final tag before submitting
+        const lastTag = tags.current.value.trim();
+        if (lastTag) {
+            setTagsList(prev => [...prev, lastTag]);
+        }
+
+        const finalTags = lastTag ? [...tagsList, lastTag] : tagsList;
+        if (finalTags.length === 0) {
             console.error('Please add at least one tag to search');
             return;
         }
 
         setIsSearching(true);
         try {
-            // Correct the fetch URL to use the absolute path
             const response = await fetch(`${serverUrl}/api/journals/search`, {
                 method: 'POST',
                 headers: {
@@ -38,7 +44,7 @@ const Search = () => {
                 },
                 credentials: 'include',
                 body: JSON.stringify({
-                    tags: tagsList
+                    tags: finalTags
                 })
             });
 
@@ -46,7 +52,7 @@ const Search = () => {
                 const result = await response.json();
                 setSearchResults(result.journals || []);
                 setSearchState([{
-                    tagsList: tagsList,
+                    tagsList: finalTags,
                     journals: result.journals || []
                 }]);
             } else {
@@ -77,7 +83,7 @@ const Search = () => {
                                 id="tags"
                                 name="tags" 
                                 ref={tags} 
-                                onKeyDown={(e) => handleSpaceDown(e, tags, setTagsList)}
+                                onKeyUp={(e) => handleTagInput(e, tags, setTagsList)} // Changed onKeyDown to onKeyUp and fixed the function call
                                 placeholder="Add tags separated by spaces to search..."
                             />
                         </div>
