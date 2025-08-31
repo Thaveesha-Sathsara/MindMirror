@@ -1,36 +1,44 @@
-import { useRef, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../../context/StoreContext";
-import { handleTagInput, getTagButtons } from "../../utilities/utils";
+import { getTagButtons } from "../../utilities/utils"; // No longer need handleTagInput here
 import "./Create.css";
 
 const Create = () => {
     const { setIsStoreUpdated } = useStore();
     const navigate = useNavigate();
     const [tagsList, setTagsList] = useState([]);
+    const [tagInputValue, setTagInputValue] = useState(""); // New state for input value
     const [isSubmitting, setIsSubmitting] = useState(false);
     const title = useRef();
     const textArea = useRef();
-    const tags = useRef();
 
     // Use the server URL from the environment variables
     const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:3000';
+
+    // This useEffect will watch for changes in the input value
+    useEffect(() => {
+        // Check if the input value contains a space or a comma
+        if (tagInputValue.includes(' ') || tagInputValue.includes(',')) {
+            const newTag = tagInputValue.trim().replace(',', '');
+            if (newTag) { // Only add if it's not an empty string
+                setTagsList(prevState => [...prevState, newTag]);
+            }
+            setTagInputValue(""); // Clear the input after separating the tag
+        }
+    }, [tagInputValue, setTagsList]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
 
-        // Define a variable to hold the final list of tags
-        let finalTags = [...tagsList];
-
-        // Add any remaining text in the tags input as a final tag before submitting
-        const lastTag = tags.current.value.trim();
-        if (lastTag) {
-            finalTags = [...finalTags, lastTag];
+        // Capture any remaining text in the input field
+        const finalTags = [...tagsList];
+        if (tagInputValue.trim()) {
+            finalTags.push(tagInputValue.trim());
         }
 
         try {
-            // Correct the fetch URL to use the absolute path
             const response = await fetch(`${serverUrl}/api/journals/create`, {
                 method: 'POST',
                 headers: {
@@ -40,7 +48,7 @@ const Create = () => {
                 credentials: 'include',
                 body: JSON.stringify({
                     journal: {
-                        tags: finalTags.filter(Boolean), // Use the finalTags variable here
+                        tags: finalTags.filter(Boolean),
                         title: title.current.value,
                         body: textArea.current.value,
                     }
@@ -52,9 +60,8 @@ const Create = () => {
                 console.log('Journal created successfully:', result);
                 resetForm();
                 setIsStoreUpdated(true);
-                navigate('/'); // Redirect to home page after successful creation
+                navigate('/');
             } else {
-                // Ensure we handle non-JSON error responses gracefully
                 try {
                     const errorData = await response.json();
                     console.error('Error creating journal:', errorData);
@@ -72,7 +79,7 @@ const Create = () => {
 
     const resetForm = () => {
         title.current.value = '';
-        tags.current.value = '';
+        setTagInputValue(''); // Reset the tag input state
         textArea.current.value = '';
         setTagsList([]);
     }
@@ -104,8 +111,8 @@ const Create = () => {
                                 <input 
                                     id="tags"
                                     name="tags" 
-                                    ref={tags} 
-                                    onKeyUp={(e) => handleTagInput(e, tags, setTagsList)}
+                                    value={tagInputValue} // Use state value here
+                                    onChange={(e) => setTagInputValue(e.target.value)} // Use onChange
                                     placeholder="Add tags separated by spaces (e.g., mood thoughts goals)"
                                 />
                             </div>
