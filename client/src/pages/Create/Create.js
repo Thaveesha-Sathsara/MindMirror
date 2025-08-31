@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../../context/StoreContext";
-import { handleTagInput, getTagButtons } from "../../utilities/utils"; // Import the new function
+import { handleTagInput, getTagButtons } from "../../utilities/utils";
 import "./Create.css";
 
 const Create = () => {
@@ -20,10 +20,13 @@ const Create = () => {
         e.preventDefault();
         setIsSubmitting(true);
 
+        // Define a variable to hold the final list of tags
+        let finalTags = [...tagsList];
+
         // Add any remaining text in the tags input as a final tag before submitting
         const lastTag = tags.current.value.trim();
         if (lastTag) {
-            setTagsList(prev => [...prev, lastTag]);
+            finalTags = [...finalTags, lastTag];
         }
 
         try {
@@ -37,7 +40,7 @@ const Create = () => {
                 credentials: 'include',
                 body: JSON.stringify({
                     journal: {
-                        tags: [...tagsList, lastTag].filter(Boolean), // Filter out any empty tags
+                        tags: finalTags.filter(Boolean), // Use the finalTags variable here
                         title: title.current.value,
                         body: textArea.current.value,
                     }
@@ -102,7 +105,7 @@ const Create = () => {
                                     id="tags"
                                     name="tags" 
                                     ref={tags} 
-                                    onKeyUp={(e) => handleTagInput(e, tags, setTagsList)} // Change onKeyDown to onKeyUp
+                                    onKeyUp={(e) => handleTagInput(e, tags, setTagsList)}
                                     placeholder="Add tags separated by spaces (e.g., mood thoughts goals)"
                                 />
                             </div>
