@@ -3,6 +3,8 @@ import JournalEntrySquare from "../../Component/JournalEntrySquare/JournalEntryS
 import { getTagButtons } from "../../utilities/utils";
 import './Search.css';
 import { useStore } from "../../context/StoreContext";
+import { TbDeviceTabletSearch } from "react-icons/tb";
+import { MdTipsAndUpdates } from "react-icons/md";
 
 const Search = () => {
     const [tagsList, setTagsList] = useState([]);
@@ -135,7 +137,7 @@ const Search = () => {
                         </>
                     ) : (
                         <div className="no-results">
-                            <div className="no-results-icon">🔍</div>
+                            <div className="no-results-icon"><TbDeviceTabletSearch /></div>
                             <h3>No journals found</h3>
                             <p>Try adding some tags and searching to find your journal entries.</p>
                         </div>
@@ -143,7 +145,7 @@ const Search = () => {
                 </div>
 
                 <div className="search-tips">
-                    <h3>💡 Search Tips</h3>
+                    <h3><MdTipsAndUpdates /> Search Tips</h3>
                     <ul>
                         <li>Add multiple tags to narrow down your search</li>
                         <li>Use specific tags like "mood", "goals", or "reflection"</li>
