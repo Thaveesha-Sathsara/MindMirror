@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useStore } from "../../context/StoreContext";
 import { getTagButtons } from "../../utilities/utils"; // No longer need handleTagInput here
 import "./Create.css";
+import { MdTipsAndUpdates } from "react-icons/md";
 
 const Create = () => {
     const { setIsStoreUpdated } = useStore();
@@ -143,7 +144,7 @@ const Create = () => {
                 </form>
                 
                 <div className="form-tips">
-                    <h3>💡 Writing Tips</h3>
+                    <h3><MdTipsAndUpdates /> Writing Tips</h3>
                     <ul>
                         <li>Write freely without worrying about grammar or structure</li>
                         <li>Include how you're feeling and why</li>
