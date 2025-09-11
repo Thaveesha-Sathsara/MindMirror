@@ -6,7 +6,6 @@ import { useStore } from "../../context/StoreContext";
 import { TbDeviceTabletSearch } from "react-icons/tb";
 import { MdTipsAndUpdates } from "react-icons/md";
 
-
 const Search = () => {
     const [tagsList, setTagsList] = useState([]);
     const [tagInputValue, setTagInputValue] = useState(""); // New state for input value
