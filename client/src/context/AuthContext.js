@@ -7,17 +7,18 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:3000';
+  const clientUrl = process.env.REACT_APP_CLIENT_URL || 'http://localhost:3000';
+    
   // Check if user is authenticated on app load
   useEffect(() => {
     checkAuthStatus();
-  }, []);
+  }, [clientUrl, serverUrl]);
 
   const checkAuthStatus = async () => {
     try {
       setError(null);
-      const response = await fetch('/api/user/me', {
-        credentials: 'include'
-      });
+      const response = await fetch(`${serverUrl}/api/user/me`, { credentials: 'include' });
       
       if (response.ok) {
         const data = await response.json();
@@ -45,17 +46,14 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     console.log('🔐 Initiating Google OAuth login...');
     
-    // Get the server URL from environment or use default
-    const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:3000';
-    
-    // Redirect to Google OAuth on the server
+    // Redirect to Google OAuth on the server using the absolute URL
     window.location.href = `${serverUrl}/auth/google`;
   };
 
   const logout = async () => {
     try {
       setError(null);
-      const response = await fetch('/auth/logout', {
+      const response = await fetch(`${serverUrl}/auth/logout`, {
         method: 'POST',
         credentials: 'include'
       });
@@ -63,8 +61,8 @@ export const AuthProvider = ({ children }) => {
       if (response.ok) {
         setUser(null);
         console.log('✅ Logged out successfully');
-        // Redirect to login page
-        window.location.href = '/login';
+        // ✅ Corrected: Redirect to the client's login page using an absolute URL
+        window.location.href = `${clientUrl}/#/login`;
       } else {
         throw new Error('Logout failed');
       }

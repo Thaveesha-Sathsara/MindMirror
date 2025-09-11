@@ -1,15 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import JournalEntrySquare from "../../Component/JournalEntrySquare/JournalEntrySquare";
-import { handleSpaceDown, getTagButtons } from "../../utilities/utils";
+import { getTagButtons } from "../../utilities/utils";
 import './Search.css';
 import { useStore } from "../../context/StoreContext";
+import { TbDeviceTabletSearch } from "react-icons/tb";
+import { MdTipsAndUpdates } from "react-icons/md";
+
 
 const Search = () => {
     const [tagsList, setTagsList] = useState([]);
+    const [tagInputValue, setTagInputValue] = useState(""); // New state for input value
     const { searchState, setSearchState } = useStore();
     const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
-    const tags = useRef();
+
+    // Use the server URL from the environment variables
+    const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:3000';
 
     useEffect(() => {
         if (searchState && searchState[0] && searchState[0].tagsList) {
@@ -17,16 +23,35 @@ const Search = () => {
         }
     }, [searchState]);
 
+    // Use a useEffect to handle tag separation based on input changes
+    useEffect(() => {
+        if (tagInputValue.includes(' ') || tagInputValue.includes(',')) {
+            const newTag = tagInputValue.trim().replace(',', '');
+            if (newTag) {
+                setTagsList(prevState => [...prevState, newTag]);
+            }
+            setTagInputValue(""); // Clear the input field
+        }
+    }, [tagInputValue, setTagsList]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (tagsList.length === 0) {
-            alert('Please add at least one tag to search');
-            return;
+        setIsSearching(true);
+
+        let finalTags = [...tagsList];
+        const lastTag = tagInputValue.trim();
+        if (lastTag) {
+            finalTags = [...finalTags, lastTag];
         }
 
-        setIsSearching(true);
+        if (finalTags.length === 0) {
+            console.error('Please add at least one tag to search');
+            setIsSearching(false);
+            return;
+        }
+        
         try {
-            const response = await fetch('/api/journals/search', {
+            const response = await fetch(`${serverUrl}/api/journals/search`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -34,7 +59,7 @@ const Search = () => {
                 },
                 credentials: 'include',
                 body: JSON.stringify({
-                    tags: tagsList
+                    tags: finalTags
                 })
             });
 
@@ -42,7 +67,7 @@ const Search = () => {
                 const result = await response.json();
                 setSearchResults(result.journals || []);
                 setSearchState([{
-                    tagsList: tagsList,
+                    tagsList: finalTags,
                     journals: result.journals || []
                 }]);
             } else {
@@ -69,11 +94,11 @@ const Search = () => {
                     <div className="search-form-container">
                         <div className="search-input-group">
                             <label htmlFor="tags">Search Tags</label>
-                            <input 
+                            <input
                                 id="tags"
-                                name="tags" 
-                                ref={tags} 
-                                onKeyDown={(e) => handleSpaceDown(e, tags, setTagsList)}
+                                name="tags"
+                                value={tagInputValue} // Control the input with state
+                                onChange={(e) => setTagInputValue(e.target.value)} // Update state on change
                                 placeholder="Add tags separated by spaces to search..."
                             />
                         </div>
@@ -82,9 +107,9 @@ const Search = () => {
                             {getTagButtons(tagsList, setTagsList)}
                         </div>
                         
-                        <button 
-                            className="search-button" 
-                            type="submit" 
+                        <button
+                            className="search-button"
+                            type="submit"
                             disabled={isSearching}
                         >
                             {isSearching ? 'Searching...' : 'Search Journals'}
@@ -113,7 +138,7 @@ const Search = () => {
                         </>
                     ) : (
                         <div className="no-results">
-                            <div className="no-results-icon">🔍</div>
+                            <div className="no-results-icon"><TbDeviceTabletSearch /></div>
                             <h3>No journals found</h3>
                             <p>Try adding some tags and searching to find your journal entries.</p>
                         </div>
@@ -121,7 +146,7 @@ const Search = () => {
                 </div>
 
                 <div className="search-tips">
-                    <h3>💡 Search Tips</h3>
+                    <h3><MdTipsAndUpdates /> Search Tips</h3>
                     <ul>
                         <li>Add multiple tags to narrow down your search</li>
                         <li>Use specific tags like "mood", "goals", or "reflection"</li>

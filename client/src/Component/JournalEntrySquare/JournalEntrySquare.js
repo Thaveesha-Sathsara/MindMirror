@@ -1,11 +1,6 @@
 import { Link } from "react-router-dom";
 import moment from "moment";
 import "./JournalEntrySquare.css";
-const formatDate = (dateString) => {
-  const options = { year: 'numeric', month: 'short', day: 'numeric' };
-  return new Date(dateString).toLocaleDateString('en-US', options);
-};
-
 
 const JournalEntrySquare = ({ list }) => {
   if (!list || list.length === 0) {
@@ -23,17 +18,19 @@ const JournalEntrySquare = ({ list }) => {
     <>
       <div className="journal-entries-grid">
         {sortedList.map((journal) => (
-          <a
-            href={`/view/${journal._id}`}
+          // ✅ Corrected: Using the <Link> component for in-app navigation
+          // The `to` prop handles the routing gracefully without a page refresh.
+          <Link
+            to={`/view/${journal._id}`} // The path to the View component
             key={journal._id}
             className="journal-entry-square"
           >
             <h3>{journal.title}</h3>
+            {/* The rest of the content remains the same */}
             <p>{journal.body}</p>
-
             <div className="journal-meta">
               <div className="journal-date">
-                {formatDate(journal.created)}
+                {moment(journal.created).format('MMM DD, YYYY')}
               </div>
               <div className="journal-tags">
                 {journal.tags && journal.tags.map((tag, index) => (
@@ -43,11 +40,10 @@ const JournalEntrySquare = ({ list }) => {
                 ))}
               </div>
             </div>
-
             <div className="read-more">
               Read full entry
             </div>
-          </a>
+          </Link>
         ))}
       </div>
     </>

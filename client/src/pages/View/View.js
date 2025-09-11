@@ -11,14 +11,17 @@ const View = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Use the server URL from the environment variables
+  const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:3000';
+
   useEffect(() => {
     const fetchJournal = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // ✅ Fetch from backend API instead of localStorage
-        const response = await fetch(`/api/journals/${id}`, {
+        // ✅ Corrected: Fetch from the backend API using the absolute URL
+        const response = await fetch(`${serverUrl}/api/journals/${id}`, {
           method: "GET",
           credentials: "include",
         });
@@ -40,7 +43,7 @@ const View = () => {
     if (id) {
       fetchJournal();
     }
-  }, [id]);
+  }, [id, serverUrl]); // Add serverUrl to the dependency array
 
   const handleBack = () => {
     navigate(-1);
@@ -51,13 +54,16 @@ const View = () => {
   };
 
   const handleDelete = async () => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete this journal entry? This action cannot be undone."
-      )
-    ) {
+    // NOTE: window.confirm() will not work inside the Canvas environment.
+    // You should replace this with a custom modal for user confirmation.
+    const userConfirmed = window.confirm(
+      "Are you sure you want to delete this journal entry? This action cannot be undone."
+    );
+    
+    if (userConfirmed) {
       try {
-        const response = await fetch(`/api/journals/${journal._id}`, {
+        // ✅ Corrected: Delete from the backend API using the absolute URL
+        const response = await fetch(`${serverUrl}/api/journals/${journal._id}`, {
           method: "DELETE",
           credentials: "include",
         });
@@ -130,15 +136,6 @@ const View = () => {
         <div className="view-content">
           <div className="view-body">{journal.body}</div>
         </div>
-
-        {/* <div className="view-actions">
-          <button onClick={handleEdit} className="view-action-button edit">
-            Edit Journal
-          </button>
-          <button onClick={handleDelete} className="view-action-button delete">
-            Delete Journal
-          </button>
-        </div> */}
       </div>
     </section>
   );

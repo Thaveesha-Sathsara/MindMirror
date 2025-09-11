@@ -1,24 +1,46 @@
-import { useRef, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../../context/StoreContext";
-import { handleSpaceDown, getTagButtons } from "../../utilities/utils";
+import { getTagButtons } from "../../utilities/utils"; // No longer need handleTagInput here
 import "./Create.css";
+import { MdTipsAndUpdates } from "react-icons/md";
 
 const Create = () => {
     const { setIsStoreUpdated } = useStore();
     const navigate = useNavigate();
     const [tagsList, setTagsList] = useState([]);
+    const [tagInputValue, setTagInputValue] = useState(""); // New state for input value
     const [isSubmitting, setIsSubmitting] = useState(false);
     const title = useRef();
     const textArea = useRef();
-    const tags = useRef();
+
+    // Use the server URL from the environment variables
+    const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:3000';
+
+    // This useEffect will watch for changes in the input value
+    useEffect(() => {
+        // Check if the input value contains a space or a comma
+        if (tagInputValue.includes(' ') || tagInputValue.includes(',')) {
+            const newTag = tagInputValue.trim().replace(',', '');
+            if (newTag) { // Only add if it's not an empty string
+                setTagsList(prevState => [...prevState, newTag]);
+            }
+            setTagInputValue(""); // Clear the input after separating the tag
+        }
+    }, [tagInputValue, setTagsList]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
 
+        // Capture any remaining text in the input field
+        const finalTags = [...tagsList];
+        if (tagInputValue.trim()) {
+            finalTags.push(tagInputValue.trim());
+        }
+
         try {
-            const response = await fetch('/api/journals/create', {
+            const response = await fetch(`${serverUrl}/api/journals/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -27,7 +49,7 @@ const Create = () => {
                 credentials: 'include',
                 body: JSON.stringify({
                     journal: {
-                        tags: [...tagsList],
+                        tags: finalTags.filter(Boolean),
                         title: title.current.value,
                         body: textArea.current.value,
                     }
@@ -39,15 +61,18 @@ const Create = () => {
                 console.log('Journal created successfully:', result);
                 resetForm();
                 setIsStoreUpdated(true);
-                navigate('/'); // Redirect to home page after successful creation
+                navigate('/');
             } else {
-                const errorData = await response.json();
-                console.error('Error creating journal:', errorData);
-                alert('Failed to create journal. Please try again.');
+                try {
+                    const errorData = await response.json();
+                    console.error('Error creating journal:', errorData);
+                } catch (jsonError) {
+                    console.error(`Error creating journal. Server responded with status ${response.status} and non-JSON data.`);
+                    console.error(response);
+                }
             }
         } catch (error) {
             console.error('Error: ', error);
-            alert('An error occurred while creating the journal. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -55,7 +80,7 @@ const Create = () => {
 
     const resetForm = () => {
         title.current.value = '';
-        tags.current.value = '';
+        setTagInputValue(''); // Reset the tag input state
         textArea.current.value = '';
         setTagsList([]);
     }
@@ -87,8 +112,8 @@ const Create = () => {
                                 <input 
                                     id="tags"
                                     name="tags" 
-                                    ref={tags} 
-                                    onKeyDown={(e) => handleSpaceDown(e, tags, setTagsList)}
+                                    value={tagInputValue} // Use state value here
+                                    onChange={(e) => setTagInputValue(e.target.value)} // Use onChange
                                     placeholder="Add tags separated by spaces (e.g., mood thoughts goals)"
                                 />
                             </div>
@@ -119,7 +144,7 @@ const Create = () => {
                 </form>
                 
                 <div className="form-tips">
-                    <h3>💡 Writing Tips</h3>
+                    <h3><MdTipsAndUpdates /> Writing Tips</h3>
                     <ul>
                         <li>Write freely without worrying about grammar or structure</li>
                         <li>Include how you're feeling and why</li>
