@@ -24,3 +24,5 @@ yarn-error.log*
 
 # Firebase / Google service account
 server/*.json
+client/.scannerwork/.sonar_lock
+client/.scannerwork/report-task.txt
