@@ -40,6 +40,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // --- Routes ---
+
+// --- Server Tester ---
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK' });
+});
+
 app.use("/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/journals", journalRoutes);
@@ -51,13 +57,15 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "client/build", "index.html"));
 });
 
-// --- Debug / Test ---
-app.get('/test', (req, res) => {
-  res.json({ message: 'Server is running!', timestamp: new Date().toISOString() });
-});
-
 // --- Start Server ---
 const PORT = process.env.PORT || 3000;
+
+// --- Error Handler ---
+app.use((err, req, res, next) => {
+  console.error(err.stack); // Log the error stack for debugging
+  res.status(500).send('Something broke!');
+});
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });

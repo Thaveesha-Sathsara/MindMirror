@@ -42,3 +42,14 @@ src/
 ├── utils
 |  ├── date-formatter.js
 
+
+
+if the training stopped in the middle, just change the training code in model/classification,
+
+trainer.train()
+trainer.save_model("./multilabel_model")
+
+to
+
+trainer.train(resume_from_checkpoint=True)
+trainer.save_model("./multilabel_model")

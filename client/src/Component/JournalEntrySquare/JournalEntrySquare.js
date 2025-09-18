@@ -18,7 +18,6 @@ const JournalEntrySquare = ({ list }) => {
     <>
       <div className="journal-entries-grid">
         {sortedList.map((journal) => (
-          // ✅ Corrected: Using the <Link> component for in-app navigation
           // The `to` prop handles the routing gracefully without a page refresh.
           <Link
             to={`/view/${journal._id}`} // The path to the View component

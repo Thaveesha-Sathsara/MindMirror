@@ -8,7 +8,7 @@ import { MdTipsAndUpdates } from "react-icons/md";
 
 const Search = () => {
     const [tagsList, setTagsList] = useState([]);
-    const [tagInputValue, setTagInputValue] = useState(""); // New state for input value
+    const [tagInputValue, setTagInputValue] = useState("");
     const { searchState, setSearchState } = useStore();
     const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
@@ -29,7 +29,7 @@ const Search = () => {
             if (newTag) {
                 setTagsList(prevState => [...prevState, newTag]);
             }
-            setTagInputValue(""); // Clear the input field
+            setTagInputValue("");
         }
     }, [tagInputValue, setTagsList]);
 

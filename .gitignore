@@ -26,3 +26,6 @@ yarn-error.log*
 server/*.json
 client/.scannerwork/.sonar_lock
 client/.scannerwork/report-task.txt
+
+# Database Model
+model
