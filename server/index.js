@@ -6,6 +6,7 @@ import path from "path";
 import connectDB from "./config/db.js";
 import { sessionMiddleware } from "./config/session.js";
 import { configurePassport } from "./config/passport.js";
+import fetch from "node-fetch";
 
 // Routes
 import authRoutes from "./routes/authRoutes.js";
@@ -41,8 +42,34 @@ app.use(passport.session());
 
 // --- Routes ---
 
-// --- Server Tester ---
-app.get('/health', (req, res) => {
+// --- Server Tester & Google Analytics ---
+app.get('/health', async (req, res) => {
+    const measurementId = process.env.GA_MEASUREMENT_ID || 'G-8E5TJ2FCSG';
+    const apiSecret = process.env.GA_API_SECRET || 'your-secret-key';
+    const userId = 'UptimeRobot';
+
+    const data = {
+        client_id: userId,
+        events: [{
+            name: 'health_check_ping',
+            params: {
+                timestamp: new Date().toISOString(),
+                source: 'server_ping',
+                method: 'GET'
+            }
+        }]
+    };
+
+    try {
+        await fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurementId}&api_secret=${apiSecret}`, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+        console.log('Google Analytics ping sent.');
+    } catch (error) {
+        console.error('Failed to send GA ping:', error);
+    }
+
     res.status(200).json({ status: 'OK' });
 });
 
